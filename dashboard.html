@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة التحكم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      background: #f4f6f9;
+      padding: 20px;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2>لوحة التحكم - بيانات العملاء</h2>
+  <table id="clientsTable">
+    <thead>
+      <tr>
+        <th>الاسم</th>
+        <th>رقم الجوال</th>
+        <th>رقم الهوية</th>
+        <th>نوع التسجيل</th>
+        <th>نوع المركبة</th>
+        <th>الخدمة</th>
+        <th>المنطقة</th>
+        <th>موعد الفحص</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCga2NImRrTUgG--2UrjgSQ0FJzL-hEhx0",
+      authDomain: "mazen-1c6b5.firebaseapp.com",
+      databaseURL: "https://mazen-1c6b5-default-rtdb.firebaseio.com",
+      projectId: "mazen-1c6b5",
+      storageBucket: "mazen-1c6b5.firebasestorage.app",
+      messagingSenderId: "487721099445",
+      appId: "1:487721099445:web:7bfb6ec3657215e0ba9efc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const clientsRef = ref(database, 'clients');
+    const tableBody = document.querySelector("#clientsTable tbody");
+
+    onValue(clientsRef, (snapshot) => {
+      tableBody.innerHTML = "";
+      const data = snapshot.val();
+      if (data) {
+        Object.values(data).forEach(client => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${client.name || ''}</td>
+            <td>${client.phone || ''}</td>
+            <td>${client.id || ''}</td>
+            <td>${client.registrationType || ''}</td>
+            <td>${client.vehicleType || ''}</td>
+            <td>${client.serviceType || ''}</td>
+            <td>${client.region || ''}</td>
+            <td>${client.inspectionDate || ''}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } else {
+        tableBody.innerHTML = "<tr><td colspan='8'>لا توجد بيانات</td></tr>";
+      }
+    });
+  </script>
+</body>
+</html>
